@@ -11,25 +11,21 @@ const NewArrival = () => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
 
   const [canScrollableRight, setCanScrollableRight] = useState(false);
-  const [products, setProducts] = useState([]);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        "https://dummyjson.com/products?sortBy=title&order=asc",
-      );
-      const updated = response?.data?.products.map((item) => ({
-        ...item,
-        quantity: 1,
-      }));
-      setProducts(updated);
-    } catch (error) {
-      console.error("API Error:", error);
-    }
-  };
+  const [newArrivals, setNewArrivals] = useState([]);
 
   useEffect(() => {
-    fetchData();
+    const fetchNewArrivals = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`,
+        );
+        setNewArrivals(response?.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchNewArrivals();
   }, []);
 
   const hnadleMouseDown = (e) => {
@@ -84,13 +80,13 @@ const NewArrival = () => {
       container.removeEventListener("scroll", updateScrollButtons);
       // }
     };
-  }, []);
+  }, [newArrivals]);
 
   useEffect(() => {
-    if (products.length > 0) {
+    if (newArrivals.length > 0) {
       updateScrollButtons();
     }
-  }, [products]);
+  }, [newArrivals]);
   return (
     <section className="py-16 px-4 lg:px-0">
       <div className="container mx-auto relative text-center mb-10">
@@ -126,16 +122,15 @@ no-scrollbar  ${isDragging ? "cursor-grabbing" : "cursor-grab"} `}
         onMouseUp={handleMouseUpOrLeave}
         onMouseLeave={handleMouseUpOrLeave}
       >
-        {products.map((item) => (
+        {newArrivals.map((item) => (
           <div
             key={item.id}
             className="min-w-[100%] sm:min-w-[50%] lg:min-w-[30%] relative"
           >
             <img
-              src={item.thumbnail}
-              alt={item.title}
+              src={item.images?.[0]?.url || "https://via.placeholder.com/300"}
+              alt={item.name}
               className="w-full h-[350px] object-cover rounded-lg"
-              draggable="false"
             />
             <div
               className="absolute bottom-0 left-0 right-0 
@@ -143,8 +138,8 @@ bg-black/60 backdrop-blur-sm
 text-white p-4 rounded-b-lg"
             >
               {" "}
-              <Link to={`/product/${item.id}`} className="block">
-                <h4 className="font-medium">{item?.title}</h4>
+              <Link to={`/product/${item._id}`} className="block">
+                <h4 className="font-medium">{item?.name}</h4>
               </Link>
               <p className="mt-1">{item.price}</p>
             </div>

@@ -74,7 +74,7 @@ const FilterSideBar = () => {
       if (checked) {
         newFilters[name] = [...(newFilters[name] || []), value];
       } else {
-        newFilters[name] = newFilters[name].filters((item) => item != value);
+        newFilters[name] = newFilters[name].filter((item) => item !== value);
       }
     } else {
       newFilters[name] = value;
@@ -100,7 +100,7 @@ const FilterSideBar = () => {
     const newPrice = e.target.value;
     setPriceRange([0, newPrice]);
     const newFilters = { ...filters, minPrice: 0, maxPrice: newPrice };
-    setFilters(filters);
+    setFilters(newFilters);
     updateUrlParams(newFilters);
   };
 
@@ -159,7 +159,15 @@ const FilterSideBar = () => {
               key={color}
               name="color"
               value={color}
-              onChange={handleFilterChange}
+              onClick={(e) =>
+                handleFilterChange({
+                  target: {
+                    name: "color",
+                    value: color,
+                    type: "button",
+                  },
+                })
+              }
               className={`w-8 h-8 rounded-full border border-gray-300 cursor-pointer transition hover:scale-105 
                 ${filters.color === color ? "ring-2 ring-blue-500" : ""}`}
               style={{ backgroundColor: color.toLowerCase() }}
