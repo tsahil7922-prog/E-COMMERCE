@@ -10,11 +10,16 @@ import {
 import SearchBarUI from "./SearchBarUI";
 import CardDrawer from "../Layout/CardDrawer";
 import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
 const NavBar = () => {
   // both for card drawer component
   const [cardOpen, setCardOpen] = useState(false);
   const [navBarOpen, setNavBarOpen] = useState(false);
 
+  const { cart } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.auth);
+  const cartItemCount =
+    cart?.products.reduce((total, product) => total + product.quantity, 0) || 0;
   const toggleCardDrawer = () => {
     setCardOpen(!cardOpen);
   };
@@ -63,12 +68,15 @@ const NavBar = () => {
 
         {/* Right Side */}
         <div className="items-center flex gap-4">
-          <Link
-            to="/admin"
-            className="block bg-black rounded text-sm text-white px-2"
-          >
-            Admin
-          </Link>
+          {user && user.role === "admin" && (
+            <Link
+              to="/admin"
+              className="block bg-black rounded text-sm text-white px-2"
+            >
+              Admin
+            </Link>
+          )}
+
           <Link to="/profile" className="hover:text-black">
             <HiOutlineUsers className="text-gray-700 h-6 w-6" />
           </Link>
@@ -77,9 +85,11 @@ const NavBar = () => {
             className="relative hover:text-black"
           >
             <HiOutlineShoppingBag className="text-gray-700 h-6 w-6" />
-            <span className="absolute -top-1 bg-rabbit-red text-white text-xs rounded-full px-2 py-0.5">
-              4
-            </span>
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 bg-rabbit-red text-white text-xs rounded-full px-2 py-0.5">
+                {cartItemCount}
+              </span>
+            )}
           </button>
           {/* Search */}
           <div className="overflow-hidden">

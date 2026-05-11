@@ -25,6 +25,7 @@ import AdminHomePage from "../pages/admin/AdminHomePage";
 import UserManagement from "../component/Admin/UserManagement";
 import ProductManagement2 from "../component/Admin/ProductManagement2";
 import EditProductPage from "../component/Admin/EditProductPage";
+import ProtectedRoute from "../component/CommonUI/ProtectedRoute";
 
 
 export const router = createBrowserRouter([
@@ -58,7 +59,11 @@ export const router = createBrowserRouter([
   // ADMIN ROUTES
   {
     path: "/admin",
-    element: <AdminLayout />,
+     element: (
+    <ProtectedRoute role="admin">
+      <AdminLayout />
+    </ProtectedRoute>
+  ),
     children: [
       {
         path: "/admin",

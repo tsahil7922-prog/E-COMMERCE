@@ -1,6 +1,6 @@
 import React from "react";
 import { HiOutlineTrash } from "react-icons/hi2";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, } from "react-redux";
 import {
   removeFromCart,
   updateCartItemQuantity,

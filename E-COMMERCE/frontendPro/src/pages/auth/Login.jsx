@@ -1,18 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import loginImg from "../../assets/login.webp";
 import { loginUser } from "../../redux/slices/authSlice";
-import {useDispatch,useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
+import { mergeCart } from "../../redux/slices/cartSlice";
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, guestId } = useSelector((state) => state.auth);
+  const { cart } = useSelector((state) => state.cart);
 
-const dispatch = useDispatch()
- const navigate = useNavigate();
+  // get redirect parameter  and check of its checkout or something
+  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+  const iscHeckOutRedirect = redirect.includes("checkout");
 
-  const { loading, error, user } = useSelector((state) => state.auth);
-
-
+  useEffect(() => {
+    if (user) {
+      if (cart?.products?.length > 0 && guestId) {
+        dispatch(mergeCart({ guestId, user })).then(() => {
+          navigate(iscHeckOutRedirect ? "/checkout" : "/");
+        });
+      } else {
+        navigate(iscHeckOutRedirect ? "/checkout" : "/");
+      }
+    }
+  }, [user, guestId, cart, navigate, iscHeckOutRedirect, dispatch]);
 
   const {
     register,
@@ -22,7 +37,7 @@ const dispatch = useDispatch()
 
   const onSubmit = (data) => {
     // console.log("Login Data:", data);
-    dispatch(loginUser(data))
+    dispatch(loginUser(data));
   };
 
   return (
@@ -37,9 +52,7 @@ const dispatch = useDispatch()
             <h2 className="text-xl font-medium">Rabbit</h2>
           </div>
 
-          <h2 className="text-2xl font-bold text-center mb-6">
-            Welcome Back!
-          </h2>
+          <h2 className="text-2xl font-bold text-center mb-6">Welcome Back!</h2>
 
           <p className="text-center mb-6">
             Enter your email and password to login
@@ -47,9 +60,7 @@ const dispatch = useDispatch()
 
           {/* Email */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">
-              Email
-            </label>
+            <label className="block text-sm font-semibold mb-2">Email</label>
             <input
               type="email"
               {...register("email", {
@@ -71,9 +82,7 @@ const dispatch = useDispatch()
 
           {/* Password */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">
-              Password
-            </label>
+            <label className="block text-sm font-semibold mb-2">Password</label>
             <input
               type="password"
               {...register("password", {
@@ -99,7 +108,10 @@ const dispatch = useDispatch()
 
           <p className="text-center mt-6 text-sm">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-blue-500">
+            <Link
+              to={`/register?redirect=${encodeURIComponent(redirect)}`}
+              className="text-blue-500"
+            >
               Register
             </Link>
           </p>
