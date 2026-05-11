@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { clearCart } from "../../redux/slices/cartSlice";
 
 const OrderConfirmationPage = () => {
-const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { checkout } = useSelector((state) => state.checkout);
+
+  // clear the cart when the order is confirmed
+  useEffect(() => {
+    if (checkout && checkout._id) {
+      dispatch(clearCart());
+    } else {
+      navigate("/my-order");
+    }
+  }, [checkout,dispatch,navigate]);
+
   const order = {
     orderId: "ORD123456",
     createdAt: new Date(),
@@ -10,17 +24,17 @@ const navigate = useNavigate()
     shipping: {
       name: "Ishan",
       address: "Delhi, India",
-      phone: "9999999999"
+      phone: "9999999999",
     },
 
     payment: {
       method: "PayPal",
-      status: "Paid"
+      status: "Paid",
     },
 
     shippingDetails: {
       shippingCost: 50,
-      freeShippingAbove: 500
+      freeShippingAbove: 500,
     },
 
     products: [
@@ -31,7 +45,7 @@ const navigate = useNavigate()
         color: "Black",
         size: "9",
         quantity: 1,
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
       },
       {
         id: 2,
@@ -40,16 +54,14 @@ const navigate = useNavigate()
         color: "White",
         size: "L",
         quantity: 2,
-        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
-      }
-    ]
+        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
+      },
+    ],
   };
-
-
 
   const subtotal = order.products.reduce(
     (acc, item) => acc + item.price * item.quantity,
-    0
+    0,
   );
 
   const shippingCharge =
@@ -59,16 +71,14 @@ const navigate = useNavigate()
 
   const total = subtotal + shippingCharge;
 
-//  DELIVERY DATE 
+  //  DELIVERY DATE
 
   const estimatedDelivery = new Date();
   estimatedDelivery.setDate(estimatedDelivery.getDate() + 5); // add 5 days more from order date
 
   return (
     <div style={styles.page}>
-
       <div style={styles.container}>
-
         {/* SUCCESS HEADER */}
 
         <div style={styles.successBox}>
@@ -76,19 +86,18 @@ const navigate = useNavigate()
           <h2 style={styles.title}>Order Confirmed</h2>
 
           <p style={styles.subtitle}>
-            Thank you for your purchase. Your order has been placed successfully.
+            Thank you for your purchase. Your order has been placed
+            successfully.
           </p>
 
           <p style={styles.delivery}>
             Estimated Delivery: <b>{estimatedDelivery.toDateString()}</b>
           </p>
-
         </div>
 
         {/* ORDER INFO */}
 
         <div style={styles.infoGrid}>
-
           <div style={styles.infoBox}>
             <h4>Order ID</h4>
             <p>{order.orderId}</p>
@@ -106,9 +115,8 @@ const navigate = useNavigate()
 
           <div style={styles.infoBox}>
             <h4>Status</h4>
-            <p style={{color:"#22c55e"}}>{order.payment.status}</p>
+            <p style={{ color: "#22c55e" }}>{order.payment.status}</p>
           </div>
-
         </div>
 
         {/* SHIPPING */}
@@ -130,7 +138,6 @@ const navigate = useNavigate()
 
           {order.products.map((product) => (
             <div key={product.id} style={styles.productCard}>
-
               <img
                 src={product.image}
                 alt={product.productName}
@@ -145,7 +152,6 @@ const navigate = useNavigate()
               </div>
 
               <div style={styles.price}>₹{product.price}</div>
-
             </div>
           ))}
         </div>
@@ -153,7 +159,6 @@ const navigate = useNavigate()
         {/* ORDER SUMMARY */}
 
         <div style={styles.summary}>
-
           <h3>Order Summary</h3>
 
           <div style={styles.row}>
@@ -172,7 +177,6 @@ const navigate = useNavigate()
             <span>Total</span>
             <span>₹{total}</span>
           </div>
-
         </div>
 
         {/* ACTION BUTTON */}
@@ -182,150 +186,145 @@ const navigate = useNavigate()
             Continue Shopping
           </button>
         </div>
-
       </div>
-
     </div>
   );
 };
 
 export default OrderConfirmationPage;
 
-
 /* ---------- STYLES ---------- */
 
 const styles = {
-
   page: {
-    background:"#f6f8fb",
-    minHeight:"100vh",
-    padding:"40px",
-    display:"flex",
-    justifyContent:"center"
+    background: "#f6f8fb",
+    minHeight: "100vh",
+    padding: "40px",
+    display: "flex",
+    justifyContent: "center",
   },
 
-  container:{
-    width:"850px",
-    background:"white",
-    borderRadius:"14px",
-    padding:"35px",
-    boxShadow:"0 10px 30px rgba(0,0,0,0.08)"
+  container: {
+    width: "850px",
+    background: "white",
+    borderRadius: "14px",
+    padding: "35px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
   },
 
-  successBox:{
-    textAlign:"center",
-    marginBottom:"30px"
+  successBox: {
+    textAlign: "center",
+    marginBottom: "30px",
   },
 
-  icon:{
-    width:"65px",
-    height:"65px",
-    borderRadius:"50%",
-    background:"#22c55e",
-    color:"white",
-    display:"flex",
-    alignItems:"center",
-    justifyContent:"center",
-    fontSize:"28px",
-    margin:"0 auto 12px"
+  icon: {
+    width: "65px",
+    height: "65px",
+    borderRadius: "50%",
+    background: "#22c55e",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "28px",
+    margin: "0 auto 12px",
   },
 
-  title:{
-    margin:0
+  title: {
+    margin: 0,
   },
 
-  subtitle:{
-    color:"#666",
-    marginBottom:"8px"
+  subtitle: {
+    color: "#666",
+    marginBottom: "8px",
   },
 
-  delivery:{
-    fontSize:"15px",
-    color:"#111"
+  delivery: {
+    fontSize: "15px",
+    color: "#111",
   },
 
-  infoGrid:{
-    display:"grid",
-    gridTemplateColumns:"repeat(4,1fr)",
-    gap:"15px",
-    marginBottom:"30px"
+  infoGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4,1fr)",
+    gap: "15px",
+    marginBottom: "30px",
   },
 
-  infoBox:{
-    background:"#f7f7f7",
-    padding:"15px",
-    borderRadius:"8px",
-    fontSize:"14px"
+  infoBox: {
+    background: "#f7f7f7",
+    padding: "15px",
+    borderRadius: "8px",
+    fontSize: "14px",
   },
 
-  section:{
-    marginBottom:"30px"
+  section: {
+    marginBottom: "30px",
   },
 
-  addressBox:{
-    background:"#f8fafc",
-    padding:"15px",
-    borderRadius:"8px"
+  addressBox: {
+    background: "#f8fafc",
+    padding: "15px",
+    borderRadius: "8px",
   },
 
-  productCard:{
-    display:"flex",
-    alignItems:"center",
-    gap:"20px",
-    border:"1px solid #eee",
-    borderRadius:"10px",
-    padding:"15px",
-    marginTop:"12px"
+  productCard: {
+    display: "flex",
+    alignItems: "center",
+    gap: "20px",
+    border: "1px solid #eee",
+    borderRadius: "10px",
+    padding: "15px",
+    marginTop: "12px",
   },
 
-  image:{
-    width:"90px",
-    height:"90px",
-    objectFit:"cover",
-    borderRadius:"8px"
+  image: {
+    width: "90px",
+    height: "90px",
+    objectFit: "cover",
+    borderRadius: "8px",
   },
 
-  productInfo:{
-    flex:1
+  productInfo: {
+    flex: 1,
   },
 
-  price:{
-    fontWeight:"bold"
+  price: {
+    fontWeight: "bold",
   },
 
-  summary:{
-    borderTop:"1px solid #eee",
-    paddingTop:"20px"
+  summary: {
+    borderTop: "1px solid #eee",
+    paddingTop: "20px",
   },
 
-  row:{
-    display:"flex",
-    justifyContent:"space-between",
-    marginBottom:"10px",
-    color:"#555"
+  row: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "10px",
+    color: "#555",
   },
 
-  totalRow:{
-    display:"flex",
-    justifyContent:"space-between",
-    fontWeight:"bold",
-    fontSize:"18px",
-    marginTop:"10px"
+  totalRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    fontWeight: "bold",
+    fontSize: "18px",
+    marginTop: "10px",
   },
 
-  buttonArea:{
-    textAlign:"center",
-    marginTop:"30px"
+  buttonArea: {
+    textAlign: "center",
+    marginTop: "30px",
   },
 
-  button:{
-    background:"#111",
-    color:"white",
-    border:"none",
-    padding:"12px 28px",
-    borderRadius:"8px",
-    cursor:"pointer",
-    fontSize:"15px"
-  }
-
+  button: {
+    background: "#111",
+    color: "white",
+    border: "none",
+    padding: "12px 28px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "15px",
+  },
 };

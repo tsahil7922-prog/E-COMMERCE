@@ -1,7 +1,6 @@
 import {
   createSlice,
   createAsyncThunk,
-  isRejectedWithValue,
 } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -11,7 +10,7 @@ export const fetchAdminProducts = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/products}`,
+       `${import.meta.env.VITE_BACKEND_URL}/api/admin/products`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`,
